@@ -4,6 +4,11 @@
 #include <GL/gl.h>
 #include <GLFW/glfw3.h>
 #include <cstdio>
+#include <glm/ext/matrix_clip_space.hpp>
+#include <glm/ext/matrix_float4x4.hpp>
+#include <glm/ext/matrix_transform.hpp>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 #include <iostream>
 #include <string>
 
@@ -14,6 +19,9 @@
 #include "VertexArray.h"
 #include "VertexBuffer.h"
 #include "VertexBufferLayout.h"
+#include "imgui/backends/imgui_impl_glfw.h"
+#include "imgui/backends/imgui_impl_opengl3.h"
+#include "imgui/imgui.h"
 
 int main(void) {
   GLFWwindow *window;
@@ -41,9 +49,9 @@ int main(void) {
   if (glewInit() != GLEW_OK)
     std::cout << "Error!" << "endl";
   {
-    float positions[] = {-0.5f, -0.5f, 0.0f, 0.0f, 0.5f, -0.5f,
-                         1.0f,  0.0f,  0.5f, 0.5f, 1.0f, 1.0f,
-                         -0.5f, 0.5f,  0.0f, 1.0f
+    float positions[] = {100.0f, 100.0f, 0.0f,   0.0f,   200.0f, 100.0f,
+                         1.0f,   0.0f,   200.0f, 200.0f, 1.0f,   1.0f,
+                         100.0f, 200.0f, 0.0f,   1.0f
 
     };
 
@@ -63,31 +71,64 @@ int main(void) {
 
     IndexBuffer ib(indices, 6);
 
+    glm::mat4 proj = glm::ortho(0.0f, 640.0f, 480.0f, 0.0f, -1.0f, 1.0f);
+    glm::mat4 view =
+        glm::translate(glm::mat4(1.0f), glm::vec3(-100.0f, 0.0f, 0.0f));
+
+    glm::mat4 model =
+        glm::translate(glm::mat4(1.0f), glm::vec3(200.0f, 200.0f, 0.0f));
+
+    glm::mat4 mvp = proj * view * model;
+
     Shader shader("res/shaders/Basic.shader");
     shader.Bind();
     shader.SetUniform4f("u_Color", 0.2f, 0.3f, 0.8f, 1.0f);
+    shader.SetUniformMat("u_MVP", mvp);
 
     Textures texture("res/textures/cherno.png");
     texture.Bind();
     shader.SetUniform1i("u_Texture", 0);
 
     va.Unbind();
+
     vb.Unbind();
     ib.Unbind();
     shader.Unbind();
 
     Renderer renderer;
 
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+    ImGuiIO &io = ImGui::GetIO();
+    (void)io;
+
+    ImGui::StyleColorsDark();
+
+    // Initialize backends
+    ImGui_ImplGlfw_InitForOpenGL(window, true);
+    ImGui_ImplOpenGL3_Init("#version 330");
+
     float r = 0.0f;
     float increment = 0.05f;
+
+    float g = 0.0f;
+    float b = 0.0f;
+    float a = 0.0f;
 
     /* Loop until the user closes the window */
     while (!glfwWindowShouldClose(window)) {
       /* Render here */
       renderer.Clear();
+      ImGui_ImplOpenGL3_NewFrame();
+      ImGui_ImplGlfw_NewFrame();
+      ImGui::NewFrame();
 
       shader.Bind();
-      shader.SetUniform4f("u_Color", r, 0.3f, 0.8f, 1.0f);
+      shader.SetUniform4f("u_Color", r, g, b, a);
+
+      ImGui::Begin("Demo Window");
+      ImGui::Text("Hello from ImGui!");
+      ImGui::End();
 
       renderer.Draw(va, ib, shader);
 
@@ -97,7 +138,19 @@ int main(void) {
         increment = 0.05f;
 
       r += increment;
-      /* Swap front and back buffers */
+      g += increment;
+      b += increment;
+      a += increment;
+
+      ImGui::Render();
+
+      // Clear screen (you can set any color)
+      glClear(GL_COLOR_BUFFER_BIT);
+
+      // Render ImGui on top of your OpenGL scene
+      ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
+      // Swap
       glfwSwapBuffers(window);
 
       /* Poll for and process events */

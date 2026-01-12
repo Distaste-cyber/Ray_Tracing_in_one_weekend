@@ -1,5 +1,6 @@
 #pragma once
 
+#include <glm/glm.hpp>
 #include <string>
 
 struct ShaderProgramSource {
@@ -23,6 +24,7 @@ public:
                     float v3);
   void SetUniform1f(const std::string &name, float value);
   void SetUniform1i(const std::string &name, int value);
+  void SetUniformMat(const std::string &name, const glm::mat4 &matrix);
 
 private:
   bool CompileShader();

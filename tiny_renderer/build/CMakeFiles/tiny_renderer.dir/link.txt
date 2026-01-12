@@ -1,0 +1,1 @@
+/usr/bin/c++ -Wl,--dependency-file=CMakeFiles/tiny_renderer.dir/link.d CMakeFiles/tiny_renderer.dir/src/main.cpp.o CMakeFiles/tiny_renderer.dir/include/tgaimage.cpp.o CMakeFiles/tiny_renderer.dir/include/our_gl.cpp.o -o tiny_renderer

@@ -1,0 +1,3 @@
+/home/muhammad/dev/c++/tiny_renderer/build/CMakeFiles/tiny_renderer.dir
+/home/muhammad/dev/c++/tiny_renderer/build/CMakeFiles/edit_cache.dir
+/home/muhammad/dev/c++/tiny_renderer/build/CMakeFiles/rebuild_cache.dir

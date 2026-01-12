@@ -1,0 +1,3 @@
+Hello This is the child process Writing!
+Hello this is parent process writing!
+Child process exited with status 11680

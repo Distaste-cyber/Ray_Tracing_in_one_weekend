@@ -1,0 +1,7 @@
+{
+	"InstallScripts" : 
+	[
+		"/home/muhammad/dev/c++/tiny_renderer/build/cmake_install.cmake"
+	],
+	"Parallel" : false
+}
